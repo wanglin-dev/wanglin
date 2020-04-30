@@ -1,0 +1,381 @@
+<!doctype html>
+<!-- saved from url=(0014)about:internet -->
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml" xmlns:v-on="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="cache-control" content="no-cache">
+    <meta http-equiv="expires" content="0">
+
+    <!--<meta name="viewport"-->
+    <!--content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">-->
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+
+    <title>视频录制页面</title>
+    <link rel="stylesheet" href="css/style_c.css"/>
+    <link rel="stylesheet" href="css/reset.css"/>
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <script src="js/util/jquery-2.2.0.js"></script>
+    <script src="js/util/jqueryAfterCordova.js"></script>
+    <script src="js/util/rem.js"></script>
+    <!--日历控件js-->
+    <script src="js/util/laydate/laydate.js"></script>
+    <script src="js/util/GlobalValue.js"></script>
+    <script src="js/util/vue.js"></script>
+    <script src="js/util/sino.js"></script>
+    <script th:inline="javascript">
+        var videoName = [[${videoName}]];
+    </script>
+    <!--高拍仪插件-->
+    <script type="text/javascript" src="js/media/videoAssist.js?v=20200416_2355" charset="UTF-8"></script>
+
+</head>
+<body id="body" onload="Load()" onunload="Unload()">
+<div class="container">
+    <!--<div>-->
+    <div class="header row">
+        <div class="headerLeft">信息录入</div>
+    </div>
+    <div class="contenr row">
+        <div class="leftInformation col-xs-5" id="cont">
+            <div class="leftTop">
+                <div class="leftTopT">
+                    <div class="essentialInformation row">
+                        <span class="essentialColor">业务基本信息</span>
+                        <!--<span>文件补充</span>-->
+                    </div>
+                    <div class="details customer row">
+                        <p class="borderP row">
+                            <span class="left col-xs-6">客户号</span>
+                            <input type="text" onblur="checkLength(this)" placeholder="请输入" v-model="appnt.appId"
+                                   class="right col-xs-6">
+                        </p>
+                        <p class="borderP row">
+                            <span class="left col-xs-6">客户姓名</span>
+                            <input type="text" onblur="checkMath(this)" placeholder="请输入" v-model="appnt.name"
+                                   class="right col-xs-6">
+                        </p>
+                        <p class="borderP row">
+                            <span class="left col-xs-6">客户性别</span>
+                            <span><img width="20" src="img/男孩1.png"/>&nbsp;&nbsp;<input type="radio" id="man" name="sex"
+                                                                                        value="0"></span>
+                            <span style="margin-left: 3%"><img width="20" src="img/女孩1.png"/>&nbsp;&nbsp;<input
+                                    type="radio" name="sex" id="woman" value="1"></span>
+                        </p>
+                        <p class="borderP row">
+                            <span class="left col-xs-6">出生日期</span>
+                            <input type="text" readonly class="demo-input" v-model="appnt.birthday" id="test">
+                            <label for="test" class="timeLabelIndex"></label>
+                        </p>
+                        <p class="borderP row">
+                            <span class="left col-xs-6">客户年龄</span>
+                            <input type="text" disabled v-model="appnt.age" class="right col-xs-6 disa">
+                        </p>
+                        <p class="borderP row">
+                            <span class="left col-xs-6">客户RPQ风险等级</span>
+                            <select v-model="appnt.riskLevels" id="level" class="right col-xs-6">
+                                <option value="">请选择</option>
+                                <option v-for="risk  in riskLevelType" :value="risk.code">
+                                    {{risk.code}}   {{risk.codeName}}
+                                </option>
+                            </select>
+                        </p>
+
+                        <div class="contenrP">
+                            <div class="borderD ">
+                                <div class="box fleft  isCheck">
+                                    <input type="checkbox" id="radio1"  name="radio" v-model="cont.isEld"
+                                           class="Linput"/><label for="radio1" class="labelL">是否为高龄</label>
+                                </div>
+                                <div class="line "></div>
+                                <div class="box isCheck radioBox2">
+                                    <input type="checkbox" id="radio2" name="radio" v-model="cont.isFirst"
+                                           class="Linput col-xs-6"/><label for="radio2"
+                                                                           class="labelL radio2">是否首次购买</label>
+                                </div>
+                                <div class="line"></div>
+                            </div>
+                            <div>
+                                <div class="box isCheck">
+                                    <input type="checkbox" id="radio3" name="radio" v-model="cont.isOndo"
+                                           class="Linput"/><label for="radio3" class="labelL">是否为高额产品或引入指定人员销售流程</label>
+                                </div>
+                                <div class="line"></div>
+                            </div>
+
+                        </div>
+                        <p class="borderP row">
+                            <span class="left col-xs-6">员工号码</span>
+                            <input type="text" disabled v-model="cont.agentCode" class="right col-xs-6 disa">
+                        </p>
+                        <p class="borderP row bottomText">
+                            <span class="left col-xs-6">员工中文姓名</span>
+                            <input type="text" disabled v-model="cont.agentName" class="right col-xs-6 disa">
+                        </p>
+                    </div>
+                </div>
+                <div class="leftTopB" id="proInfo">
+                    <div class="productInformation">
+                        产品/业务信息
+                    </div>
+                    <select id="money" >
+                        <option value="">请选择</option>
+                        <option v-for="currency  in currencyType" :value="currency">
+                            {{currency}}
+                        </option>
+                    </select>
+                    <div class="productInformationOut row" id="pvc">
+                        <div class="details productDetails">
+                            <p class="borderP borderPTop">
+                                <span class="spanColor">产品/业务信息</span>
+                                <span class="times" onclick="isDelete(this)">&times;</span>
+                            </p>
+                            <p class="borderP row">
+                                <span class="paddingLeft col-xs-6">业务类型</span>
+                                <select name="business" onchange="getProduct(this)" class="right col-xs-6"
+                                        id="businessType">
+                                    <option value="0">请选择</option>
+                                    <option v-for="business  in businessType" :value="business.businessTypeCode">
+                                        {{business.businessTypeName}}
+                                    </option>
+                                </select>
+                            </p>
+                            <p class="borderP row">
+                                <span class="paddingLeft col-xs-6">产品名称</span>
+                                <select name="product" onchange="getProductInfo(this)" class="right col-xs-6">
+                                    <option value="0">请选择</option>
+                                </select>
+                            </p>
+                            <p class="borderP row">
+                                <span class="left paddingLeft col-xs-6">产品类型</span>
+                                <span class="right paddingRight col-xs-6 productTypeName">默认匹配</span>
+                            </p>
+                            <p class="borderP row">
+                                <span class="left paddingLeft col-xs-6">产品编号</span>
+                                <span class="right paddingRight col-xs-6 productCode ">默认匹配</span>
+                            </p>
+                            <p class="borderP row">
+                                <span class="left paddingLeft col-xs-6">产品风险等级</span>
+                                <span class="right paddingRight col-xs-6 productTriskLevels">默认匹配</span>
+                            </p>
+                            <p class="borderP row">
+                                <span class="left paddingLeft col-xs-6">产品公司名称</span>
+                                <input type="text" readonly class="right paddingRight col-xs-6 companyName" value="默认匹配"/>
+                            </p>
+                            <p class="borderP row">
+                                <span class="left paddingLeft col-xs-6">投资币种/金额</span>
+                                <select class="money col-xs-2"
+                                        style="border:solid #ccc 1px;padding-left:0px; position: relative;top:-3px">
+                                    <option value="">请选择</option>
+                                    <option v-for="currency  in currencyType" :value="currency">
+                                        {{currency}}
+                                    </option>
+                                </select>
+                                <input type="text" onblur="sino.formatCurrency(this)" onkeyup="checkCount()"
+                                       maxlength="10" name="amount" onfocus="rmoney(this)"
+                                       class="right paddingRight col-xs-4 "/>
+                                <input type="hidden" class="greatnumberlimit"/>
+                                <input type="hidden" class="oldAgeLimit"/>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="leftTopB hidden">
+                    <div class="productInformation">
+                        产品/业务信息
+                    </div>
+                    <div class="productInformationOut row">
+                        <div v-show="productList" class="details productDetails" style="display: none"
+                             v-for="product in productList">
+                            <p class="borderP borderPTop">
+                                <span class="spanColor">产品/业务信息</span>
+                            </p>
+                            <p class="borderP row">
+                                <span class="paddingLeft col-xs-6">业务类型</span>
+                                <span class="right col-xs-6 paddingRight fff"> {{ product.businessTypeName }} </span>
+                            </p>
+                            <p class="borderP row">
+                                <span class="paddingLeft col-xs-6">产品名称</span>
+                                <input class="right paddingRight col-xs-6 fff" readonly
+                                       v-bind:value="product.productName"/>
+                            </p>
+                            <p class="borderP row">
+                                <span class="left paddingLeft col-xs-6">产品类型</span>
+                                <span class="right paddingRight col-xs-6  fff">{{ product.productTypeName }}</span>
+                            </p>
+                            <p class="borderP row">
+                                <span class="left paddingLeft col-xs-6">产品编号</span>
+                                <span class="right paddingRight col-xs-6  fff">{{ product.productCode }}</span>
+                            </p>
+                            <p class="borderP row">
+                                <span class="left paddingLeft col-xs-6">产品风险等级</span>
+                                <span class="right paddingRight col-xs-6 productTriskLevels fff">{{ product.productRiskLevels }}</span>
+                            </p>
+                            <p class="borderP row">
+                                <span class="left paddingLeft col-xs-6">产品公司名称</span>
+                                <input class="right paddingRight col-xs-6 fff" readonly
+                                       v-bind:value="product.companyName"/>
+                            </p>
+                            <p class="borderP row">
+                                <span class="left paddingLeft col-xs-6">投资货币/金额</span>
+                                <select class="col-xs-2 fff money" disabled
+                                        style="border:solid #ccc 1px;padding-left:0px; ">
+                                    <option value="">{{ product.currencyType }}</option>
+                                </select>
+                                <span class="right paddingRight col-xs-4 fff">{{ product.amount }}</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="leftBottom row">
+                <!--<input type="button" class="btn tbutton col-xs-3  " id="startAudio" value="播放">-->
+                <input type="button" class="btn tbutton col-xs-3 col-xs-offset-1 add" value="添加">
+                <input type="button" disabled class="btn button  col-xs-3 col-xs-offset-3 preservation" value="保存"/>
+            </div>
+        </div>
+
+        <div class="right rightInformation col-xs-7" id="video">
+            <div class="rightVideo row">
+                <OBJECT ID="ViewAssist" STYLE="width:100%;height:100%;"
+                        CLASSID="CLSID:26BA9E7F-78E9-4FB8-A05C-A4185D80D759">
+                </OBJECT>
+            </div>
+            <div class="rightList row">
+                <p class="speechTechnique speechImg14">
+                    <img src="img/down_25.png" alt="" class="img25 hidden">
+                    <img src="img/down_26.png" alt="" class="img26 hidden">
+                    <span id="talkTitle" class="btnR">产品话术</span>
+                    <img src="img/cn_14.png" alt="" class="img14 hidden">
+                    <span id="audioDiv">音量:<img id="audioImg" src="img/audio/audio1.png"/></span>
+                </p>
+                <div class="speechTechniqueL">
+                    <div v-show="talks" class=" speechTechniqueP" style="display: none" v-for="(talk,index) in talks">
+                        <div class="box fleft ">
+                            <input v-if="index !=0" disabled type="checkbox" v-bind:value="talk.qualityCode"
+                                   v-bind:id="index" v-on:click="taskCheck($event)" name="radio"
+                                   class="Linput taskCheck"/>
+                            <input v-else type="checkbox" v-bind:value="talk.qualityCode" v-bind:id="index"
+                                   v-on:click="taskCheck($event)" name="radio" class="Linput taskCheck"/>
+                            <label v-bind:for="index" class="labelR"></label>
+                        </div>
+                        <div class="line"></div>
+                        <img v-if="talk.isread == 1" src="img/icon_18.png" v-bind:name="talk.mp3Path"   alt="" class=" horn"
+                             v-on:click="speech($event)">
+                        <img v-else src="img/icon_19.png" alt="" class="horn"  v-on:click="speech($event)" >
+                        <div class="speechDivBox">
+                            <div class="speechDivT ">
+                                <span class="">{{ talk.pointName }}</span>
+                                <img src="img/down_24.png" alt="" class="speechImg " v-on:click="showContent($event)">
+                            </div>
+                            <div class="selectDiv" v-bind:title="talk.note" style="display: none">
+                                <span class="openTop ">{{ talk.qualityZn }}</span>
+                                <span class="openbottom">{{ talk.qualityEn }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="leftBottom row">
+                <input type="button" class="btn button col-xs-2 col-xs-offset-1 replace" value="更换产品"/>
+                <input type="button" id="return" class="btn button col-xs-2 col-xs-offset-2" value="放弃购买"/>
+                <input type="button" id="stopVideo" disabled class="btn button col-xs-2 col-xs-offset-2" value="完成录制"/>
+            </div>
+        </div>
+        <!--弹窗-->
+        <div class="modal" id="myModal" style="display: none"></div>
+        <object id="myaudio"  classid="clsid:6BF52A52-394A-11D3-B153-00C04F79FAA6"  width="0" height="0"    >
+            <param name="URL" value="woman.mp3" />                        
+        </object>
+    </div>
+</div>
+</div>
+<!--------------------------------------------高拍仪元素 ------------------------------------------------------------>
+<OBJECT ID="EloamGlobal_ID" style="display: none" CLASSID="CLSID:52D1E686-D8D7-4DF2-9A74-8B8F4650BF73"></OBJECT>
+<script language="Javascript" event="DevChange(type, idx, dbt)" for="EloamGlobal_ID" type="text/JavaScript">
+    //设备接入和丢失
+    //type设备类型， 1 表示视频设备， 2 表示音频设备
+    //idx设备索引
+    //dbt设备动作类型
+    if (1 == type) {
+        if (1 == dbt)//dbt 1 表示设备到达
+        {
+            var deviceType = EloamGlobal.GetEloamType(1, idx);
+
+            if (2 == deviceType || 3 == deviceType)//辅摄像头
+            {
+                if (null == DeviceAssist) 
+				{
+                    DeviceAssist = EloamGlobal.CreateDevice(1, idx);
+				}
+				if (DeviceAssist) 
+				{
+					var label = document.getElementById('lab2');
+					label.innerHTML = DeviceAssist.GetFriendlyName();
+
+					var mode = document.getElementById('selMode2');
+					var subType = DeviceAssist.GetSubtype();
+					if (0 != (subType & 1)) {
+						mode.add(new Option("YUY2"));
+					}
+					if (0 != (subType & 2)) {
+						mode.add(new Option("MJPG"), 0);
+					}
+					//若为辅摄像头优先采用mjpg模式打开
+
+					mode.selectedIndex = 0;
+					setTimeout(function () {
+						OpenVideoAssist();
+					}, 1000);
+				}
+            }
+        }
+
+        if (2 == dbt)//dbt 2 表示设备丢失
+        {
+            if (DeviceAssist) {
+                if (idx == DeviceAssist.GetIndex()) {
+                    if (VideoAssist) {
+                        VideoAssist.Destroy();
+                        VideoAssist = null;
+
+                        ViewAssist.SetText("", 0);
+                    }
+                    DeviceAssist.Destroy();
+                    DeviceAssist = null;
+
+                    document.getElementById('selMode2').options.length = 0;
+                    document.getElementById('selRes2').options.length = 0;
+                }
+            }
+        }
+
+    }
+</script>
+<script language="Javascript" event="AudioVolume(ret)" for="EloamGlobal_ID" type="text/JavaScript">
+    var audio = ret.toString();
+    audioI++;
+    audioSum += parseInt(audio);
+</script>
+<div style="display: none">
+    <label id="lab2">设备2</label>
+    <select id="selMode2" style="width: 90px" name="selMode"></select>
+    <select id="selRes2" style="width: 90px" name="selRes" onchange="OpenVideoAssist()"></select>
+</div>
+</body>
+<script src="js/util/bootstrap.min.js"></script>
+<script src="js/videoVue.js"></script>
+<script src="js/util/base64.js"></script>
+<script src="js/index.js?v=20200416_2355"></script>
+
+</html>
